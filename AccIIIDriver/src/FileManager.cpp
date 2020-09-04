@@ -21,6 +21,9 @@ FileManager::FileManager(std::string fn) {
 
 		setFileName("data_" + std::string(buffer) + ".csv");
 	}
+	else {
+		setFileName(fn);
+	}
 
 }
 

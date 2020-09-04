@@ -21,6 +21,7 @@
 
 using namespace std;
 
+bool basic();
 bool advance_thread();
 bool advance_thread_infinite();
 
@@ -30,12 +31,57 @@ int main(int argc, char **argv) {
 
     errorRaised = false;
 
-    errorRaised = advance_thread();
+    errorRaised = basic();
+    //errorRaised = advance_thread();
     //errorRaised = advance_thread_infinite();
 
     return errorRaised;
 }
 
+bool basic() {
+
+    AccIIIDriver accDriver;
+    int readTime_ms = 2 * 1000;
+
+    if (AD_OK != accDriver.record(readTime_ms)) {
+        // Must join both thread before leaving
+        accDriver.close();
+
+        return !AD_OK;
+    }
+
+    // ...
+    // Do what you want during the recording time...
+    // ...
+    std::cout << "Do what you want during the recording time..." << std::endl;
+
+    if (AD_OK != accDriver.close()) {
+        // Must join both thread before leaving
+        return !AD_OK;
+    }
+
+    // copy the recorded data
+    vector3D_int data = accDriver.getData();
+
+    // simple way to 
+    FileManager fm;
+    bool withSpecificFileName = 0;
+
+    if (withSpecificFileName) {
+        fm = FileManager("fileName_AccIIIRecord.csv");
+    }
+    else {
+        // it is defined automatically with date+time
+        fm = FileManager();
+    }
+
+    // fill the .csv file with recorded data
+    fm.addToFile(data);
+
+    std::cout << "Data saved in : " << fm.getFileName() << std::endl;
+
+    return AD_OK;
+}
 
 bool advance_thread_infinite() {
 
@@ -105,11 +151,12 @@ bool advance_thread() {
     accDriver = new AccIIIDriver();
     disp_data = 1;
 
-    if (AD_OK != accDriver->record(1000)) {
+    if (AD_OK != accDriver->record(10^100000)) {
         // Must join both thread before leaving
         accDriver->close();
         return !AD_OK;
     }
+
 
     if (AD_OK != accDriver->close()) {
         // Must join both thread before leaving

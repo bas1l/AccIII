@@ -14,7 +14,8 @@ AccIIIDriver::AccIIIDriver() {
 
     this->a3d = new AccIIIDecoder();
     this->a3l = new AccIIIListener();
-
+    
+    seterrorCommunication(false);
     setmasterState(StateThread::initialised);
     setlistenerState(StateThread::initialised);
     setdecoderState(StateThread::initialised);
@@ -311,6 +312,7 @@ bool AccIIIDriver::record(int _readTime_ms) {
         // if listener and decoder are not in their running state or later, wait
         Sleep(1);
         if (geterrorCommunication()) {
+            perror("Record did not go well, error of communication ");
             // if an error of communication has been raised:
             return !AD_OK;
         }
